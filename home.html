@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>~/dev/aakankshadc.com</title>
+    <style>
+        body {
+            background-color: black;
+            color: #39ff14;
+            font-family: monospace;
+            padding: 20px;
+        }
+        .terminal {
+            max-width: 800px;
+            margin: auto;
+            white-space: pre-wrap;
+            line-height: 1.7;
+        }
+        .prompt {
+            color: white;
+        }
+        .command {
+            font-weight: bold;
+            color: cyan;
+        }
+        .output {
+            color: #39ff14;
+        }
+        a {
+            color: #ffc107;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .typing {
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .cursor {
+            display: inline-block;
+            width: 0.6em;
+            height: 1em;
+            background: white;
+            margin-left: 5px;
+            animation: blink 0.75s step-end infinite;
+            position: relative;
+            top: 2px;
+        }
+        @keyframes blink {
+            from, to { background: transparent; }
+            50% { background: white; }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let terminal = document.querySelector(".terminal");
+            let cursor = document.createElement("span");
+            cursor.classList.add("cursor");
+            let commands = [
+                { text: "user@machine:~/dev/aakankshadc.com$ cat about.txt", delay: 500, type: true },
+                { text: "Hi, I'm Aakanksha! A developer passionate about building cool projects.", delay: 200, type: false },
+                { text: "You can find my work above. Let's connect!", delay: 200, type: false },
+                { text: "user@machine:~/dev/aakankshadc.com$ ls -1 projects/", delay: 500, type: true },
+                { text: "  • <a href='https://github.com/yourusername/project1' target='_blank'>project1</a>", delay: 200, type: false },
+                { text: "  • <a href='https://github.com/yourusername/project2' target='_blank'>project2</a>", delay: 200, type: false },
+                { text: "  • <a href='https://github.com/yourusername/project3' target='_blank'>project3</a>", delay: 200, type: false },
+                { text: "user@machine:~/dev/aakankshadc.com$ ls -1 contact/", delay: 500, type: true },
+                { text: "  • <a href='https://github.com/yourusername/project1' target='_blank'>contact1</a>", delay: 200, type: false },
+                { text: "  • <a href='https://github.com/yourusername/project2' target='_blank'>contact2</a>", delay: 200, type: false },
+                { text: "  • <a href='https://github.com/yourusername/project3' target='_blank'>contact3</a>", delay: 200, type: false },
+                { text: "user@machine:~/dev/aakankshadc.com$", delay: 500, type: true }
+            ];
+            
+            function typeText(index) {
+                if (index >= commands.length) {
+                    terminal.appendChild(cursor);
+                    return;
+                }
+                
+                let commandDiv = document.createElement("div");
+                commandDiv.classList.add(commands[index].type ? "typing" : "output");
+                terminal.appendChild(commandDiv);
+                
+                let text = commands[index].text;
+                let i = 0;
+                
+                if (commands[index].type) {
+                    function typeCharacter() {
+                        if (i < text.length) {
+                            commandDiv.textContent += text[i];
+                            i++;
+                            setTimeout(typeCharacter, 30);
+                        } else {
+                            setTimeout(() => typeText(index + 1), commands[index].delay);
+                        }
+                    }
+                    typeCharacter();
+                } else {
+                    commandDiv.innerHTML = text;
+                    setTimeout(() => typeText(index + 1), commands[index].delay);
+                }
+            }
+            
+            typeText(0);
+        });
+    </script>
+</head>
+<body>
+    <div class="terminal"></div>
+</body>
+</html>

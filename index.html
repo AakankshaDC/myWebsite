@@ -27,6 +27,12 @@
         .output {
             color: #39ff14;
         }
+        .time {
+            color: #39ff14;
+        }
+        .directory {
+            color: #268bd2;
+        }
         a {
             color: #ffc107;
             text-decoration: none;
@@ -59,51 +65,56 @@
             let terminal = document.querySelector(".terminal");
             let cursor = document.createElement("span");
             cursor.classList.add("cursor");
+
+            function getTime() {
+                let now = new Date();
+                return now.toLocaleTimeString();
+            }
+
             let commands = [
-                { text: "user@machine:~/dev/aakankshadc.com$ cat about.txt", delay: 500, type: true },
-                { text: "Hi, I'm Aakanksha! A developer passionate about building cool projects.", delay: 200, type: false },
-                { text: "You can find my work above. Let's connect!", delay: 200, type: false },
-                { text: "user@machine:~/dev/aakankshadc.com$ ls -1 projects/", delay: 500, type: true },
-                { text: "  • <a href='https://github.com/yourusername/project1' target='_blank'>project1</a>", delay: 200, type: false },
-                { text: "  • <a href='https://github.com/yourusername/project2' target='_blank'>project2</a>", delay: 200, type: false },
-                { text: "  • <a href='https://github.com/yourusername/project3' target='_blank'>project3</a>", delay: 200, type: false },
-                { text: "user@machine:~/dev/aakankshadc.com$ ls -1 contact/", delay: 500, type: true },
-                { text: "  • <a href='https://github.com/yourusername/project1' target='_blank'>contact1</a>", delay: 200, type: false },
-                { text: "  • <a href='https://github.com/yourusername/project2' target='_blank'>contact2</a>", delay: 200, type: false },
-                { text: "  • <a href='https://github.com/yourusername/project3' target='_blank'>contact3</a>", delay: 200, type: false },
-                { text: "user@machine:~/dev/aakankshadc.com$", delay: 500, type: true }
+                { text: "cat about.txt", delay: 500, showPrompt: true },
+                { text: "Hi, I'm Aakanksha! A developer passionate about building cool projects.", delay: 200, showPrompt: false },
+                { text: "You can find my work above. Let's connect!", delay: 200, showPrompt: false },
+                { text: "ls -1 projects/", delay: 500, showPrompt: true },
+                { text: "  • <a href='https://github.com/yourusername/project1' target='_blank'>project1</a>", delay: 200, showPrompt: false },
+                { text: "  • <a href='https://github.com/yourusername/project2' target='_blank'>project2</a>", delay: 200, showPrompt: false },
+                { text: "  • <a href='https://github.com/yourusername/project3' target='_blank'>project3</a>", delay: 200, showPrompt: false },
+                { text: "ls -1 contact/", delay: 500, showPrompt: true },
+                { text: "  • <a href='https://github.com/yourusername/project1' target='_blank'>contact1</a>", delay: 200, showPrompt: false },
+                { text: "  • <a href='https://github.com/yourusername/project2' target='_blank'>contact2</a>", delay: 200, showPrompt: false },
+                { text: "  • <a href='https://github.com/yourusername/project3' target='_blank'>contact3</a>", delay: 200, showPrompt: false }
             ];
-            
+
             function typeText(index) {
                 if (index >= commands.length) {
                     terminal.appendChild(cursor);
                     return;
                 }
-                
+
                 let commandDiv = document.createElement("div");
-                commandDiv.classList.add(commands[index].type ? "typing" : "output");
-                terminal.appendChild(commandDiv);
                 
-                let text = commands[index].text;
-                let i = 0;
-                
-                if (commands[index].type) {
-                    function typeCharacter() {
-                        if (i < text.length) {
-                            commandDiv.textContent += text[i];
-                            i++;
-                            setTimeout(typeCharacter, 30);
-                        } else {
-                            setTimeout(() => typeText(index + 1), commands[index].delay);
-                        }
-                    }
-                    typeCharacter();
-                } else {
-                    commandDiv.innerHTML = text;
-                    setTimeout(() => typeText(index + 1), commands[index].delay);
+                if (commands[index].showPrompt) {
+                    let timeSpan = document.createElement("span");
+                    timeSpan.classList.add("time");
+                    timeSpan.textContent = "[" + getTime() + "] ";
+                    
+                    let promptSpan = document.createElement("span");
+                    promptSpan.classList.add("prompt");
+                    promptSpan.innerHTML = "user@machine:<span class='directory'>[~/dev/aakankshadc.com]</span>$ ";
+                    
+                    commandDiv.appendChild(timeSpan);
+                    commandDiv.appendChild(promptSpan);
                 }
+                
+                let textSpan = document.createElement("span");
+                textSpan.classList.add("command");
+                textSpan.innerHTML = commands[index].text;
+                commandDiv.appendChild(textSpan);
+                terminal.appendChild(commandDiv);
+
+                setTimeout(() => typeText(index + 1), commands[index].delay);
             }
-            
+
             typeText(0);
         });
     </script>

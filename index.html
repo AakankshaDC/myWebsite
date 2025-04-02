@@ -33,6 +33,9 @@
         .directory {
             color: #268bd2;
         }
+        .cyan {
+            color: cyan;
+        }
         a {
             color: #ffc107;
             text-decoration: none;
@@ -41,9 +44,9 @@
             text-decoration: underline;
         }
         .typing {
-            display: block;
+            display: inline;
             overflow: hidden;
-            white-space: pre-wrap;
+            white-space: nowrap;
         }
         .cursor {
             display: inline-block;
@@ -65,31 +68,32 @@
             let terminal = document.querySelector(".terminal");
             let cursor = document.createElement("span");
             cursor.classList.add("cursor");
-
+            
             function getTime() {
                 let now = new Date();
                 return now.toLocaleTimeString();
             }
 
             let commands = [
-                { text: "cat about.txt", delay: 500, showPrompt: true },
-                { text: "Hi, I'm Aakanksha Choudhary! A developer passionate about building cool projects.", delay: 200, showPrompt: false },
-                { text: "You can find my work below. Let's connect!", delay: 200, showPrompt: false },
-                { text: "ls -1 projects/", delay: 500, showPrompt: true },
-                { text: "  • <a href='https://github.com/AakankshaDC/Py-Snake' target='_blank'>Py-Snake</a>", delay: 200, showPrompt: false },
-                { text: "  • <a href='https://github.com/yourusername/project2' target='_blank'>project2</a>", delay: 200, showPrompt: false },
-                { text: "  • <a href='https://github.com/yourusername/project3' target='_blank'>project3</a>", delay: 200, showPrompt: false },
-                { text: "ls -1 contact/", delay: 500, showPrompt: true },
-                { text: "  • <a href='https://www.linkedin.com/in/aakankshac/' target='_blank'>LinkedIn</a>", delay: 200, showPrompt: false },
-                { text: "  • <a href='mailto:aakankshadc32@gmail.com'>Email</a>", delay: 200, showPrompt: false }
+                { text: "cat about.txt", delay: 500, showPrompt: true, type: true, class: "prompt" },
+                { text: "Hi, I'm Aakanksha Choudhary! A developer passionate about building cool projects.", delay: 200, showPrompt: false, type: false, class: "cyan" },
+                { text: "You can find my work below. Let's connect!", delay: 200, showPrompt: false, type: false, class: "cyan" },
+                { text: "ls -1 projects/", delay: 500, showPrompt: true, type: true, class: "prompt" },
+                { text: "  <span style='color: #ffc107;'>• Py-Snake (<a href='https://github.com/AakankshaDC/Py-Snake' target='_blank'>source code</a>)", delay: 200, type: false },
+                { text: "  <span style='color: #ffc107;'>• Minesweeper-py (<a href='https://github.com/AakankshaDC/minesweeper-py' target='_blank'>source code</a>)", delay: 200, type: false },
+                { text: "  <span style='color: #ffc107;'>• Project3 (<a href='https://github.com/yourusername/project3' target='_blank'>Add-source-code-link-here</a>)", delay: 200, type: false },
+                { text: "ls -1 contact/", delay: 500, showPrompt: true, type: true, class: "prompt" },
+                { text: "  <span style='color: #ffc107;'>• <a href='https://www.linkedin.com/in/aakankshac/' target='_blank'>LinkedIn</a>", delay: 200, showPrompt: false, type: false },
+                { text: "  <span style='color: #ffc107;'>• <a href='mailto:aakankshadc32@gmail.com'>Email</a>", delay: 200, showPrompt: false, type: false },
+                { text: "", delay: 500, showPrompt: true, type: true, class: "prompt" }
             ];
 
             function typeText(index) {
                 if (index >= commands.length) {
-                    terminal.appendChild(cursor);
+                    if (terminal.lastChild) terminal.lastChild.appendChild(cursor);
                     return;
                 }
-
+                
                 let commandDiv = document.createElement("div");
                 
                 if (commands[index].showPrompt) {
@@ -106,12 +110,33 @@
                 }
                 
                 let textSpan = document.createElement("span");
-                textSpan.classList.add("command");
-                textSpan.innerHTML = commands[index].text;
+                textSpan.classList.add(commands[index].type ? "typing" : "output");
+                if (commands[index].class) {
+                    textSpan.classList.add(commands[index].class);
+                }
                 commandDiv.appendChild(textSpan);
                 terminal.appendChild(commandDiv);
-
-                setTimeout(() => typeText(index + 1), commands[index].delay);
+                
+                let text = commands[index].text;
+                let i = 0;
+                
+                if (commands[index].type) {
+                    function typeCharacter() {
+                        if (i < text.length) {
+                            textSpan.innerHTML += text[i];
+                            i++;
+                            setTimeout(typeCharacter, 30);
+                        } else {
+                            textSpan.appendChild(cursor);
+                            setTimeout(() => typeText(index + 1), commands[index].delay);
+                        }
+                    }
+                    typeCharacter();
+                } else {
+                    textSpan.innerHTML = text;
+                    if (terminal.lastChild) terminal.lastChild.appendChild(cursor);
+                    setTimeout(() => typeText(index + 1), commands[index].delay);
+                }
             }
 
             typeText(0);
